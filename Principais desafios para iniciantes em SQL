@@ -1,0 +1,86 @@
+/*1. Manipulação de Exceções
+Problema:
+Erros inesperados podem ocorrer durante a execução de um bloco PL/SQL, e é importante lidar com essas exceções de forma adequada para garantir que o programa não pare abruptamente.
+
+Solução:
+Utilize blocos BEGIN, EXCEPTION, e END para capturar e tratar exceções de forma adequada.*/
+
+--Exemplo:
+
+BEGIN
+    -- Algum código que pode lançar uma exceção
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Um erro ocorreu: ' || SQLERRM);
+END;
+
+
+/*2. Desempenho de Consultas
+Problema:
+Consultas mal escritas ou mal otimizadas podem levar a um desempenho ruim do sistema.
+
+Solução:
+Use índices adequadamente, evite loops desnecessários e use EXPLAIN PLAN para entender como o Oracle executa uma consulta.*/
+
+--Exemplo:
+
+
+CREATE INDEX idx_cliente_nome ON cliente(nome);
+
+
+/*3. Strings Dinâmicas e SQL Injection
+Problema:
+Construir consultas SQL dinâmicas sem a devida precaução pode levar a vulnerabilidades de segurança, como SQL injection.
+
+Solução:
+Use BIND VARIABLES ou EXECUTE IMMEDIATE com cuidado para evitar SQL injection.*/
+
+--Exemplo:
+
+v_nome_cliente := 'João';
+v_query := 'SELECT * FROM cliente WHERE nome = :1';
+EXECUTE IMMEDIATE v_query INTO v_resultado USING v_nome_cliente;
+
+
+/*4. Gerenciamento de Transações
+Problema:
+Transações mal gerenciadas podem levar a problemas de integridade de dados, como commits ou rollbacks em locais inadequados.
+
+Solução:
+Use COMMIT e ROLLBACK de forma adequada e evite transações longas que podem causar bloqueios.*/
+
+--Exemplo:
+
+BEGIN
+    -- Algumas operações
+    COMMIT; -- ou ROLLBACK em caso de erro
+END;
+
+
+/*5. Manutenção de Código
+Problema:
+Código PL/SQL mal documentado e difícil de entender pode levar a problemas de manutenção e debugging.
+
+Solução:
+Documente o código adequadamente, siga padrões de nomenclatura consistentes e divida o código em funções e procedimentos menores e reutilizáveis.*/
+
+--Exemplo:
+
+/*
+    Esta função calcula o total de vendas para um cliente específico.
+    Parâmetros:
+        - p_cliente_id: ID do cliente para o qual calcular o total de vendas.
+    Retorno:
+        - Total de vendas para o cliente especificado.
+*/
+CREATE OR REPLACE FUNCTION calcular_total_vendas(p_cliente_id IN NUMBER) RETURN NUMBER
+IS
+    v_total_vendas NUMBER;
+BEGIN
+    SELECT SUM(valor)
+    INTO v_total_vendas
+    FROM vendas
+    WHERE cliente_id = p_cliente_id;
+
+    RETURN v_total_vendas;
+END calcular_total_vendas;
